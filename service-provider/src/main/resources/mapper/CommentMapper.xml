@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.flrjcx.xypt.mapper.CommentMapper">
+    <resultMap id="commentResultMap" type="com.flrjcx.xypt.common.model.param.comment.Comment">
+        <id column="comment_id" property="commentId"/>
+        <result column="comment_bbs_id" property="commentBbsId"/>
+        <result column="comment_user_id" property="commentUserId"/>
+        <result column="comment_context" property="commentContext"/>
+        <result column="comment_create_time" property="commentCreateTime"/>
+        <result column="comment_level" property="level"/>
+        <result column="comment_floor" property="commentFloor"/>
+        <result column="comment_parent_id" property="commentParentId"/>
+    </resultMap>
+
+    <sql id="allInfo">
+        comment_id,
+        comment_bbs_id,
+        comment_user_id,
+        comment_context,
+        comment_create_time,
+        comment_level,
+        comment_floor,
+        comment_parent_id
+    </sql>
+
+    <insert id="insert" parameterType="com.flrjcx.xypt.common.model.param.comment.Comment">
+        INSERT INTO comment
+        (comment_id,
+        comment_bbs_id,
+        comment_user_id,
+        comment_context,
+        comment_create_time,
+        comment_level,
+        comment_floor,
+        comment_parent_id)
+        VALUES (#{commentId},
+        #{commentBbsId},
+        #{commentUserId},
+        #{commentContext},
+        now(),
+        #{level},
+        #{commentFloor},
+        #{commentParentId})
+    </insert>
+
+    <insert id="reply" parameterType="com.flrjcx.xypt.common.model.param.comment.Comment">
+        INSERT INTO comment
+        (comment_id,
+         comment_bbs_id,
+         comment_user_id,
+         comment_context,
+         comment_create_time,
+         comment_level,
+         comment_floor,
+         comment_parent_id
+         )
+        VALUES (#{commentId},
+                #{commentBbsId},
+                #{commentUserId},
+                #{commentContext},
+                now(),
+                #{level},
+                #{commentFloor},
+                #{commentParentId})
+    </insert>
+
+    <delete id="delete">
+        delete
+        from comment
+        where comment_bbs_id=#{commentBbsId}
+    </delete>
+
+    <update id="cancelComment" parameterType="long">
+        update comment
+        set comment_praise = comment_praise - 1
+        where comment_id = #{commentId} and comment_bbs_id = #{bbsId} and comment_user_id = #{userId}
+    </update>
+
+    <update id="updateComment" parameterType="long">
+        update comment
+        set comment_praise = comment_praise + 1
+        where comment_id = #{commentId} and comment_bbs_id = #{bbsId} and comment_user_id = #{userId}
+    </update>
+
+
+    <select id="findAll" resultMap="commentResultMap">
+        select
+        <include refid="allInfo"></include>
+        from
+        comment
+    </select>
+
+    <select id="findByBbsId" resultMap="commentResultMap">
+        select
+        a.*,
+        u.nick_name,
+        u.nick_pic
+        from comment a
+        left join
+        users u
+        on
+        a.comment_user_id = u.user_id
+        where
+        a.comment_bbs_id = #{commentBbsId}
+        order by
+        a.comment_create_time
+        desc
+    </select>
+    <select id="findByCommentUserId" resultType="com.flrjcx.xypt.common.model.param.comment.Comment">
+        select
+        nick_name,
+        nick_pic
+        from users
+        where
+        user_id = #{commentUserId}
+    </select>
+    <select id="findByCommentId" resultType="com.flrjcx.xypt.common.model.param.comment.Comment">
+        select
+        comment_user_id
+        from comment
+        where
+        comment_id = #{commentId}
+    </select>
+
+</mapper>

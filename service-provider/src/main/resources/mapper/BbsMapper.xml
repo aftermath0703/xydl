@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flrjcx.xypt.mapper.BbsMapper">
+
+    <sql id="allBbsInfo">
+        bbs_id,
+        bbs_user_id,
+        bbs_title,
+        bbs_context_md,
+        bbs_context,
+        bbs_views,
+        bbs_collect,
+        bbs_praise,
+        bbs_no,
+        bbs_type,
+        bbs_create_time,
+        bbs_update_time,
+        bbs_delete,
+        bbs_description,
+        bbs_cover_pic,
+        bbs_label as bbsLabelJson
+    </sql>
+    <insert id="production">
+        insert into bbs (bbs_id,bbs_user_id,bbs_title,bbs_context,bbs_type,bbs_description,bbs_cover_pic
+        <if test="bbs.bbsLabelJson != null">
+        ,bbs_label
+        </if>)
+        VALUES (#{bbs.bbsId},#{bbs.bbsUserId},#{bbs.bbsTitle},#{bbs.bbsContext},#{bbs.bbsType},#{bbs.bbsDescription},#{bbs.bbsCoverPic}
+        <if test="bbs.bbsLabelJson != null">
+        ,#{bbs.bbsLabelJson}
+        </if>)
+    </insert>
+
+    <update id="updatePraise">
+        update bbs
+        set bbs_praise=bbs_praise + 1
+        where bbs_id = #{bbsId}
+    </update>
+
+    <update id="cancelPraise">
+        update bbs
+        set bbs_praise=bbs_praise - 1
+        where bbs_id = #{bbsId}
+    </update>
+
+    <update id="updateNo">
+        update bbs
+        set bbs_no=bbs_no + 1
+        where bbs_id = #{bbsId}
+    </update>
+
+    <update id="cancelNo">
+        update bbs
+        set bbs_no=bbs_no - 1
+        where bbs_id = #{bbsId}
+    </update>
+    <update id="updatePost">
+        update bbs
+        set bbs_context=#{bbsContext},
+            bbs_context_md=#{bbsContextMd},
+            bbs_title=#{bbsTitle}
+        where bbs_id = #{bbsId}
+    </update>
+    <update id="deletePostById">
+        update
+            bbs
+        set bbs_delete=1
+        where bbs_id = #{bbsId}
+    </update>
+    <select id="selectBbsOwner" resultType="java.lang.Long">
+        select bbs_user_id
+        from bbs
+        where bbs_id = #{bbsId}
+          and bbs_delete = 0
+    </select>
+    <select id="searchPostByKeys" resultType="com.flrjcx.xypt.common.model.param.bbs.Bbs">
+        select
+        bbs_id,
+        bbs_user_id,
+        bbs_title,
+        bbs_views,
+        bbs_collect,
+        bbs_praise,
+        bbs_no,
+        bbs_type,
+        bbs_create_time,
+        bbs_update_time,
+        bbs_delete,
+        bbs_description,
+        bbs_cover_pic,
+        bbs_label
+        from bbs
+        <where>
+            <foreach collection="searchKeys" item="searchKey" separator="or" open="(" close=")">
+                binary bbs_title like CONCAT('%',#{searchKey},'%')
+            </foreach>
+            and bbs_delete = 0
+            <if test="type != null">
+                and bbs_type = #{type}
+            </if>
+        </where>
+        order by bbs_update_time DESC
+    </select>
+    <select id="bbsList" resultType="com.flrjcx.xypt.common.model.param.bbs.Bbs">
+        select
+        bbs_id,
+        bbs_user_id,
+        bbs_title,
+        bbs_views,
+        bbs_collect,
+        bbs_praise,
+        bbs_no,
+        bbs_type,
+        bbs_create_time,
+        bbs_update_time,
+        bbs_delete,
+        bbs_description,
+        bbs_cover_pic,
+        bbs_label as bbsLabelJson from bbs order by bbs_create_time desc
+    </select>
+    <select id="bbsDetails" resultType="com.flrjcx.xypt.common.model.param.bbs.Bbs">
+        select <include refid="allBbsInfo"/> from bbs where bbs_id = #{bbsId}
+    </select>
+    <select id="bbsUserHot" resultType="com.flrjcx.xypt.common.model.param.bbs.BbsHot">
+        select bbs_id,bbs_title,bbs_praise from bbs  where bbs_user_id = #{userId} order by bbs_praise desc
+    </select>
+    <select id="selectAccount" resultType="com.flrjcx.xypt.common.model.param.common.Users">
+        select nick_name,nick_pic from users where user_id = #{userId}
+    </select>
+
+</mapper>

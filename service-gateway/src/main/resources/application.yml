@@ -1,0 +1,37 @@
+server:
+  port: 3000
+  servlet:
+    context-path: /dev
+spring:
+  profiles:
+    active: prod
+  application:
+    name: campus-gateway-provider
+  cloud:
+    nacos:
+      server-addr: 106.52.154.238:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: campus-service-common
+          uri: lb://campus-service-common
+          predicates:
+            - Path=/xypt/api/common/**
+        - id: campus-backend-service-provider
+          uri: lb://campus-backend-service-provider
+          predicates:
+            - Path=/xypt/api/backend/**
+        - id: campus-service-provider
+          uri: lb://campus-service-provider
+          predicates:
+            - Path=/xypt/api/client/**
+        - id: campus-email-service
+          uri: lb://campus-email-service
+          predicates:
+            - Path=/xypt/api/email/**
+        - id: campus-log-service
+          uri: lb://campus-log-service
+          predicates:
+            - Path=/xypt/api/log/**

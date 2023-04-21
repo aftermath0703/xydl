@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flrjcx.xypt.mapper.MyWalletMapper">
+
+    <resultMap id="MoneyDetailsResult" type="com.flrjcx.xypt.common.model.param.common.TransactionParam">
+        <result property="transactionId" column="transaction_id"/>
+        <result property="transactionAmount" column="transaction_amount"/>
+        <result property="transactionUserId" column="transaction_user_id"/>
+        <result property="transactionBeUserId" column="transaction_be_user_id"/>
+        <result property="transactionBeUserNick" column="transaction_be_user_nick"/>
+        <result property="transactionContent" column="transaction_content"/>
+        <result property="transactionType" column="transaction_type"/>
+        <result property="transactionBalance" column="transaction_balance"/>
+        <result property="transactionCreateTime" column="transaction_create_time"  jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <update id="recharge">
+        update users set balance = balance + #{money} where user_id = #{userId}
+    </update>
+
+    <update id="deposit">
+        update users set balance = balance - #{money} where user_id = #{userId}
+    </update>
+
+    <select id="checkMoney" resultType="java.lang.Boolean">
+        select (CASE WHEN balance &lt; #{money} THEN 0 else 1 END) as bl from users where user_id = #{userId};
+    </select>
+
+    <select id="getBalance" resultType="java.math.BigDecimal">
+        select balance from users where user_id = #{userId}
+    </select>
+
+    <select id="moneyDetails" resultMap="MoneyDetailsResult">
+        select * from
+        t_transaction
+        where transaction_user_id = #{userId}
+        <if test="type != null">
+            and transaction_type = #{type}
+        </if>
+        and transaction_create_time LIKE concat(#{date},'%')
+    </select>
+
+    <select id="moneyDetailsTwo" resultMap="MoneyDetailsResult">
+        select * from
+        t_transaction
+        where transaction_be_user_id = #{userId} and transaction_create_time LIKE concat(#{date},'%')
+    </select>
+
+
+</mapper>

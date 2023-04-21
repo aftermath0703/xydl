@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.flrjcx.xypt.mapper.PersonalCenterMapper">
+    <insert id="realUser">
+        INSERT INTO real_register
+        (real_registe_user_id,
+         real_name,
+         id_card)
+        VALUES (#{realRegisterUserId},
+                #{realName},
+                #{idCard});
+    </insert>
+    <delete id="deletedAccount">
+        DELETE
+        FROM users
+        where user_id = #{userId};
+    </delete>
+
+    <delete id="deletedRealAccount">
+        DELETE
+        FROM real_register
+        where real_registe_user_id = #{userId};
+    </delete>
+
+
+
+    <!--修改头像地址-->
+    <update id="changeHeadPortrait">
+        update users
+        set nick_pic=#{picPath}
+        where user_id = #{userId}
+
+
+    </update>
+
+    <update id="updateUserInfo">
+        update users
+        <trim prefix="set" suffixOverrides=",">
+            <if test="nickName != null"> nick_name = #{nickName}, </if>
+            <if test="nickPic != null"> nick_pic = #{nickPic}, </if>
+            <if test="content != null"> content = #{content}, </if>
+            <if test="sex != null"> sex = #{sex}, </if>
+            <if test="birthday != null"> birthday = #{birthday}, </if>
+            <if test="phone != null"> phone = #{phone}, </if>
+            <if test="email != null"> email = #{email}, </if>
+            <if test="address != null"> address = #{address}, </if>
+            <if test="school != null"> school = #{school}, </if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+
+
+    <select id="getFansNum" resultType="integer">
+        SELECT fans_num
+        FROM users
+        WHERE user_id = #{userId};
+    </select>
+
+    <select id="countByUserId" resultType="integer">
+        SELECT COUNT(*)
+        FROM real_register
+        WHERE real_registe_user_id = #{realRegisterUserId};
+    </select>
+    <select id="getUserById" resultType="com.flrjcx.xypt.common.model.param.common.Users">
+        SELECT *
+        FROM   users
+        WHERE  user_id = #{userId};
+    </select>
+
+    <sql id="myInfo">
+        users.nick_name,
+        users.nick_pic,
+        users.content,
+        users.sex,
+        users.birthday,
+        users.phone,
+        users.email,
+        users.fans_num,
+        users.focus_num,
+        users.address,
+        users.school,
+        real_register.real_name
+    </sql>
+
+    <select id="getMyInfoById" resultType="com.flrjcx.xypt.common.model.dto.MyInfoDto">
+        select <include refid="myInfo"/> from users
+        left join real_register on real_register.real_registe_user_id=users.user_id
+        where user_id=#{userId};
+    </select>
+</mapper>

@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    nacos:
+      server-addr: 106.52.154.238:8848
+      discovery:
+        ip: 106.52.154.238

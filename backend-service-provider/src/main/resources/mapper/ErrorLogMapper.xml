@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flrjcx.xypt.mapper.ErrorLogMapper">
+
+    <resultMap id="errorLog" type="com.flrjcx.xypt.common.model.domain.log.ErrorLog">
+        <id property="errorId" column="error_id"/>
+        <result property="errorName" column="error_name"/>
+        <result property="errorClass" column="error_class"/>
+        <result property="errorMethod" column="error_method"/>
+        <result property="errorLineNumber" column="error_line_number"/>
+        <result property="errorStackTrace" column="error_stack_trace"/>
+        <result property="errorMessage" column="error_message"/>
+        <result property="errorServiceHost" column="error_service_host"/>
+        <result property="errorServiceIp" column="error_service_ip"/>
+        <result property="errorParam" column="error_param"/>
+        <result property="errorUri" column="error_uri"/>
+        <result property="errorCreateTime" column="error_create_time"/>
+    </resultMap>
+<!--    //errorName serviceHost serviceIp uri beforeTime afterTime -->
+    <sql id="selectErrorListWhere">
+        <if test="errorName != null">
+            AND error_name like CONCAT('%',#{errorName},'%')
+        </if>
+        <if test="serviceHost != null">
+            AND error_service_host like CONCAT('%',#{serviceHost},'%')
+        </if>
+        <if test="serviceIp != null">
+            AND error_service_ip like CONCAT('%',#{serviceIp},'%')
+        </if>
+        <if test="uri != null">
+            AND error_uri like CONCAT('%',#{uri},'%')
+        </if>
+        <if test="beforeTime != null">
+            AND error_create_time <![CDATA[ >= ]]> #{beforeTime}
+        </if>
+        <if test="afterTime != null">
+            AND error_create_time <![CDATA[ <= ]]> #{afterTime}
+        </if>
+    </sql>
+
+    <select id="selectErrorList" resultMap="errorLog">
+        SELECT
+            error_id,
+            error_name,
+            error_class,
+            error_method,
+            error_line_number,
+            error_stack_trace,
+            error_message,
+            error_service_host,
+            error_service_ip,
+            error_param,
+            error_uri,
+            error_create_time
+        FROM
+            error_log
+        <where>
+            AND error_id <![CDATA[ <= ]]> ( SELECT error_id FROM error_log ORDER BY error_id DESC LIMIT 1 ) -  #{pageNum}
+            <include refid="selectErrorListWhere"></include>
+        </where>
+
+        ORDER BY
+            error_id DESC
+            LIMIT #{pageSize}
+    </select>
+    <select id="selectErrorListTotal" resultType="java.lang.Long">
+        SELECT
+          (SELECT error_id FROM error_log <where><include refid="selectErrorListWhere"></include></where> ORDER BY error_id DESC LIMIT 1) -
+          (SELECT error_id FROM error_log <where><include refid="selectErrorListWhere"></include></where> ORDER BY error_id ASC LIMIT 1) + 1
+    </select>
+</mapper>

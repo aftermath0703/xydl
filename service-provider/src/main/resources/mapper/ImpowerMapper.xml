@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flrjcx.xypt.mapper.ImpowerMapper">
+
+
+    <select id="checkImpower" resultType="java.lang.Boolean">
+        select count(*) from impower where impower_user_id = #{userId}
+    </select>
+</mapper>

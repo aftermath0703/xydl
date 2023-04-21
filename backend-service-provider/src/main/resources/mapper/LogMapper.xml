@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flrjcx.xypt.mapper.LogMapper">
+    <resultMap id="accessLog" type="com.flrjcx.xypt.common.model.result.log.ApiLogResult">
+        <id property="id" column="access_log_id"/>
+        <result property="ip" column="access_log_user_ip"/>
+        <result property="uri" column="access_log_uri"/>
+        <result property="port" column="access_log_port"/>
+        <result property="isp" column="access_log_isp"/>
+        <result property="area" column="access_log_area"/>
+        <result property="region" column="access_log_region"/>
+        <result property="city" column="access_log_city"/>
+        <result property="district" column="access_log_district"/>
+        <result property="timestamp" column="access_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="getApiLogList" resultMap="accessLog">
+        SELECT * FROM api_access_log WHERE access_time <![CDATA[ <= ]]> #{afterTime} and access_time <![CDATA[ >= ]]> #{beforeTime}
+        <if test="ip != null">
+            AND access_log_user_ip like CONCAT('%',#{ip},'%')
+        </if>
+        <if test="city != null">
+            AND access_log_city like CONCAT('%',#{city},'%')
+        </if>
+        <if test="uri != null">
+            AND access_log_uri like CONCAT('%',#{uri},'%')
+        </if>
+        ORDER BY access_log_id DESC
+    </select>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flrjcx.xypt.mapper.DataPlatFormMapper">
+
+    <select id="totalTransaction" resultType="java.math.BigDecimal">
+        SELECT SUM(transaction_amount) AS transactionAmount FROM t_transaction
+        WHERE transaction_type = 0 or transaction_type = 2
+    </select>
+    <select id="totalDeposit" resultType="java.math.BigDecimal">
+        SELECT SUM(transaction_amount) AS transactionAmount FROM t_transaction
+        WHERE transaction_type = 1
+    </select>
+    <select id="totalTransactionChart" resultType="com.flrjcx.xypt.common.model.result.data.plat.form.ChartResult">
+        select sum(transaction_amount) as amount,date_format(transaction_create_time,'%Y-%m-%d') as date
+        from t_transaction
+        where transaction_type = 0 and transaction_create_time <![CDATA[ <= ]]> #{afterTime} and transaction_create_time <![CDATA[ >= ]]> #{beforeTime}
+        GROUP BY date_format(transaction_create_time,'%Y-%m-%d')
+        order by transaction_create_time DESC
+    </select>
+    <select id="totalDepositChart" resultType="com.flrjcx.xypt.common.model.result.data.plat.form.ChartResult">
+        select sum(transaction_amount) as amount,date_format(transaction_create_time,'%Y-%m-%d') as date
+        from t_transaction
+        where transaction_type = 1 and transaction_create_time <![CDATA[ <= ]]> #{afterTime} and transaction_create_time <![CDATA[ >= ]]> #{beforeTime}
+        GROUP BY date_format(transaction_create_time,'%Y-%m-%d')                                                                                                                                       
+        order by transaction_create_time DESC
+    </select>
+    <select id="totalDepositChartYear"
+            resultType="com.flrjcx.xypt.common.model.result.data.plat.form.ChartResult">
+        select sum(transaction_amount) as amount,date_format(transaction_create_time,'%Y-%m') as month
+        from t_transaction
+        where transaction_type = 1 and transaction_create_time LIKE concat(#{date},'%')
+        GROUP BY date_format(transaction_create_time,'%Y-%m')
+        order by transaction_create_time DESC
+    </select>
+    <select id="totalTransactionChartYear"
+            resultType="com.flrjcx.xypt.common.model.result.data.plat.form.ChartResult">
+        select sum(transaction_amount) as amount,date_format(transaction_create_time,'%Y-%m') as month
+        from t_transaction
+        where transaction_type = 0 and transaction_create_time LIKE concat(#{date},'%')
+        GROUP BY date_format(transaction_create_time,'%Y-%m')
+        order by transaction_create_time DESC
+    </select>
+</mapper>

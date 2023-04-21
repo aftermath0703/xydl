@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flrjcx.xypt.mapper.FocusMapper">
+
+    <sql id="allInfo">
+        user_id
+        ,
+        nick_name,
+        nick_pic,
+        content,
+        sex,
+        birthday,
+        phone,
+        email,
+        account,
+        password,
+        balance,
+        fans_num,
+        focus_num,
+        address,
+        school,
+        create_time,
+        update_time,
+        status
+    </sql>
+    <delete id="deleteAttent">
+        delete
+        from attent
+        where user_id = #{attent.userId}
+          and attent_user_id =#{attent.attentUserId}
+    </delete>
+
+    <select id="queryByArray" resultType="com.flrjcx.xypt.common.model.param.common.Users">
+        select
+        <include refid="allInfo"></include>
+        from users
+        where user_id in
+        <foreach collection="array" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <insert id="addAttent">
+        INSERT INTO attent
+        (user_id,
+         attent_user_id)
+        VALUES (#{param.userId},
+                #{param.attentUserId})
+    </insert>
+    <select id="getById" resultType="com.flrjcx.xypt.common.model.param.common.Users">
+        select
+        <include refid="allInfo"></include>
+        from
+        users where user_id = #{userId}
+    </select>
+    <select id="idolIdList" resultType="java.lang.Long">
+        select attent_user_id
+        from attent
+        where user_id = #{id}
+    </select>
+    <select id="focusList" resultType="com.flrjcx.xypt.common.model.param.focus.UserPartList">
+        select nick_name as nickName,nick_pic as nickPic,content,fans_num as fansNum
+        from users
+        where user_id in
+        <foreach collection="userIdList" item="idNo" open="(" close=")" separator=",">
+            #{idNo}
+        </foreach>
+    </select>
+    <select id="fansIdList" resultType="java.lang.Long">
+        select user_id
+        from attent
+        where attent_user_id = #{id}
+    </select>
+    <select id="getUserPartList" resultType="com.flrjcx.xypt.common.model.param.focus.UserPartList">
+        select nick_name as nickName,nick_pic as nickPic,content,fans_num as fansNum
+        from users
+        where user_id in
+        <foreach collection="userIdList" item="idNo" open="(" close=")" separator=",">
+            #{idNo}
+        </foreach>
+    </select>
+
+
+    <update id="updateFocus">
+        update users
+        <set>
+            <if test="user.fansNum != null and user.fansNum != ''">
+                fans_num = #{user.fansNum},
+            </if>
+            <if test="user.focusNum != null and user.focusNum != ''">
+                focus_num = #{user.focusNum}
+            </if>
+        </set>
+        where user_id = #{user.userId}
+    </update>
+
+    <update id="updateByList0" parameterType="java.util.List">
+        <foreach item="item" collection="list" separator=",">
+            UPDATE users
+            <set>
+                <if test="item.fansNum != null and item.fansNum != ''">
+                    fans_num = #{item.fansNum},
+                </if>
+                <if test="item.focusNum != null and item.focusNum != ''">
+                    focus_num = #{item.focusNum}
+                </if>
+            </set>
+            WHERE
+            user_id=#{item.userId}
+        </foreach>
+    </update>
+
+    <update id="updateByList1" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update users
+            <set>
+                <if test="item.fansNum != null and item.fansNum != ''">
+                    fans_num = #{item.fansNum},
+                </if>
+                <if test="item.focusNum != null and item.focusNum != ''">
+                    focus_num = #{item.focusNum}
+                </if>
+            </set>
+            where user_id = #{item.userId}
+        </foreach>
+    </update>
+    <update id="updateByList2">
+        UPDATE
+        users
+        SET display_order= CASE
+        <if test="sortList != null">
+            <foreach collection="sortList" open="" item="item" close="" separator="" index="index">
+                WHEN id=#{item.id,jdbcType=BIGINT} THEN #{item.displayOrder,jdbcType=TINYINT}
+            </foreach>
+        </if>
+        END
+        WHERE
+        <if test="idList != null">
+            id IN
+            <foreach collection="idList" open="(" item="item" close=")" separator="," index="index">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+    <!--此路不通-->
+    <update id="updateByList3" parameterType="java.util.List">
+        <foreach collection="list" item="item"
+                 index="index" separator=",">
+            update users
+            <set>
+                <if test="item.fansNum != null and item.fansNum != ''">
+                    fans_num = #{item.fansNum}
+                </if>
+                <if test="item.focusNum != null and item.focusNum != ''">
+                    focus_num = #{item.focusNum}
+                </if>
+            </set>
+            where user_id = #{item.userId}
+        </foreach>
+    </update>
+    <update id="updateByList">
+        <foreach collection="updateByList" item="item" separator=";">
+            update users
+            <set>
+                <if test="item.fansNum != null and item.fansNum != ''">
+                    fans_num = #{item.fansNum},
+                </if>
+                <if test="item.focusNum != null and item.focusNum != ''">
+                    focus_num = #{item.focusNum},
+                </if>
+            </set>
+            where user_id = #{item.userId}
+        </foreach>
+    </update>
+    <select id="fansNum" resultType="java.lang.Integer">
+        select distinct coun(1)
+        from atten
+        where attent_user_id = #{idolId};
+    </select>
+
+    <select id="focusNum" resultType="java.lang.Integer">
+        select distinct coun(1)
+        from atten
+        where user_id = #{fansId};
+    </select>
+
+</mapper>

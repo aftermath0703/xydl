@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flrjcx.xypt.mapper.BbsNoMapper">
+
+    <insert id="insertNo">
+        insert into bbs_no (no_bbs_id, no_user_id)
+        VALUES (#{bbsId}, #{userId})
+    </insert>
+    <delete id="deleteNo">
+        delete from bbs_no
+        where no_bbs_id=#{bbsId} and no_user_id=#{userId}
+    </delete>
+</mapper>

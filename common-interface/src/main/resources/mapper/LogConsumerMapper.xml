@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flrjcx.xypt.mapper.LogConsumerMapper">
+
+    <insert id="insertApiMsg">
+        INSERT INTO api_access_log
+        (access_log_user_ip,
+        access_log_uri,
+        access_log_port,
+        <if test="apiLogResult.isp != null and apiLogResult.isp != ''">
+            access_log_isp,
+        </if>
+        <if test="apiLogResult.area != null and apiLogResult.area != ''">
+            access_log_area,
+        </if>
+
+        <if test="apiLogResult.region != null and apiLogResult.region != ''">
+            access_log_region,
+        </if>
+        <if test="apiLogResult.city != null and apiLogResult.city != ''">
+            access_log_city,
+        </if>
+        <if test="apiLogResult.district != null and apiLogResult.district != ''">
+            access_log_district,
+        </if>
+        access_time)
+        VALUES ( #{apiLogResult.ip},
+        #{apiLogResult.uri},
+        #{apiLogResult.port},
+        <if test="apiLogResult.isp != null and apiLogResult.isp != ''">
+            #{apiLogResult.isp},
+        </if>
+        <if test="apiLogResult.area != null and apiLogResult.area != ''">
+            #{apiLogResult.area},
+        </if>
+        <if test="apiLogResult.region != null and apiLogResult.region != ''">
+            #{apiLogResult.region},
+        </if>
+        <if test="apiLogResult.city != null and apiLogResult.city != ''">
+            #{apiLogResult.city},
+        </if>
+        <if test="apiLogResult.district != null and apiLogResult.district != ''">
+            #{apiLogResult.district},
+        </if>
+        #{apiLogResult.timestamp})
+    </insert>
+
+    <insert id="insertOperMsg">
+        INSERT INTO oper_log
+        (<if test="operLog.title != null and operLog.title != ''">
+            title,
+         </if>
+         operate_type,
+         method,
+         request_method,
+         operator_type,
+         operator_name,
+         oper_url,
+         oper_ip,
+         <if test="operLog.operParam != null and operLog.operParam != ''">
+             oper_param,
+         </if>
+         <if test="operLog.jsonResult != null and operLog.jsonResult != ''">
+             json_result,
+         </if>
+         status,
+         <if test="operLog.errorMsg != null and operLog.errorMsg != ''">
+             error_msg,
+         </if>
+         oper_time)
+        VALUES
+        (<if test="operLog.title != null and operLog.title != ''">
+             #{operLog.title},
+         </if>
+         #{operLog.operateType},
+         #{operLog.method},
+         #{operLog.requestMethod},
+         #{operLog.operatorType},
+         #{operLog.operatorName},
+         #{operLog.operUrl},
+         #{operLog.operIp},
+         <if test="operLog.operParam != null and operLog.operParam != ''">
+             #{operLog.operParam},
+         </if>
+         <if test="operLog.jsonResult != null and operLog.jsonResult != ''">
+             #{operLog.jsonResult},
+         </if>
+         #{operLog.status},
+         <if test="operLog.errorMsg != null and operLog.errorMsg != ''">
+             #{operLog.errorMsg},
+         </if>
+         #{operLog.operTime})
+    </insert>
+</mapper>

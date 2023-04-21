@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flrjcx.xypt.mapper.RegisterMapper">
+
+
+    <insert id="addUser">
+        INSERT INTO users
+                    (user_id,
+                     account,
+                     nick_name,
+                     password,
+                     email,
+                     status)
+        VALUES     ( #{userId},
+                     #{account},
+                     #{nickName},
+                     #{password},
+                     #{email},
+                     #{status})
+    </insert>
+    <update id="setStatusOk">
+        update
+            users
+        set
+            status = '1'
+        where
+            user_id = #{uid}
+    </update>
+
+    <select id="selectUserByEmail" resultType="com.flrjcx.xypt.common.model.param.common.Users">
+        select
+            email
+        from
+            users
+        where
+            email = #{email}
+        limit
+            1
+    </select>
+    <select id="selectUserByAccount" resultType="com.flrjcx.xypt.common.model.param.common.Users">
+         select
+            account
+        from
+            users
+        where
+            account = #{account}
+        limit
+            1
+    </select>
+    <select id="findSameEmail" resultType="java.lang.Boolean">
+        select
+            count(email)
+        from users
+        where email=#{email}
+    </select>
+
+    <select id="findSameAccount" resultType="java.lang.Boolean">
+        select
+            count(account)
+        from users
+        where account=#{account}
+    </select>
+</mapper>
